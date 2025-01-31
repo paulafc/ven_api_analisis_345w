@@ -1,0 +1,317 @@
+#AREA OF RESPONSABILITY CHILD PROTECTION VENEZUELA 2024
+# INDICATORS
+# SECTORIAL OBJECTIVES
+# REACHED PEOPLE
+
+# rm(list=ls())
+# if (!require("pacman")) install.packages("pacman")
+# pacman::p_load(tidyverse, readxl, openxlsx, writexl,jsonlite, dplyr)
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+# getwd()
+source("utils_nna.R")
+# START -------------------------------------------------------------------
+
+clean_data<-df
+location <- 'name_check'
+
+# Indicador 1.1.2.4 -------------------------------------------------------------
+# de NNA y personas cuidadoras afectados y en riesgo con acceso a actividades de salud mental y apoyo psicosocial individual y grupal utilizando un enfoque diferencial de género, edad y diversidad
+# 2.13: Proveer actividades de salud mental y apoyo psicosocial individual a NNA en riesgo y con necesidades de protección con enfoque de género, edad y diversidad
+# 2.14: Proveer actividades de salud mental y apoyo psicosocial grupal a NNA en riesgo y con necesidades de protección con enfoque de género, edad y diversidad
+# 2.15: Proveer actividades de salud mental y apoyo psicosocial individual a personas cuidadoras de NNA en riesgo y con necesidades de protección con enfoque de género, edad y diversidad
+# 2.16: Proveer actividades de salud mental y apoyo psicosocial grupal a personas cuidadoras de NNA en riesgo y con necesidades de protección con enfoque de género, edad y diversidad
+
+# max(2.13,2.14)+ max(2.15,2.16)
+
+name.act <- unlist((indicators %>% filter(indicator == indicators.list[1, "indicator"]) %>% select(number_activity)))
+name.ind <- unique(unlist((indicators %>% filter(indicator == indicators.list[1, "indicator"]) %>% select(indicator))))
+
+name.max <- c("2.13","2.14")
+temp1<-calculate_max(data = df,activity = name.max, aggregation = c(adm.level[[3]],col.location.type,location),targets_summarise = c(col.reach.type, col.reach.disagg))
+
+name.max <-c("2.15","2.16")
+temp2<-calculate_max(data = df,activity = name.max, aggregation = c(adm.level[[3]],col.location.type,location),targets_summarise = c(col.reach.type, col.reach.disagg))
+
+temp <- bind_rows(temp1, temp2)
+temp <- calculate_sum(data = temp,
+                      activity = "none",
+                      aggregation = adm.level[[3]],
+                      targets_summarise = c(col.reach.type,col.reach.disagg)) 
+
+
+ind.1124 <- temp %>% 
+  mutate(indicator = unique(name.ind),.before = 1) 
+
+print('Indicador 1.1.2.4 finished')
+
+# Indicador 1.1.2.5 -------------------------------------------------------------
+# de NNA afectados y en riesgos de protección que acceden a servicios de protección de la niñez utilizando un enfoque de género, edad y diversidad
+# 2.17: Proveer servicios de apoyo integral para la localización y reunificación de NNA en riesgo, incluyendo NNA no acompañados y separados con enfoque sensible al género, edad y diversidad
+# 2.18: Proveer programas de cuidado alternativo a NNA en riesgo con enfoque sensible al género, edad y diversidad
+# 2.19: Proveer programas y servicios especializados de protección a NNA afectados y en riesgos de protección, incluyendo la gestión de casos, con enfoque sensible al género, edad y diversidad
+# sum(2.17, 2.18, 2.19)
+print('Indicador 1.1.2.5 started')
+name.act <- unlist((indicators %>% filter(indicator == indicators.list[2, "indicator"]) %>% select(number_activity)))
+name.ind <- unique(unlist((indicators %>% filter(indicator == indicators.list[2, "indicator"]) %>% select(indicator))))
+
+temp <- calculate_sum(data = df,
+                      activity = name.act,
+                      aggregation = c(adm.level[[3]]),
+                      targets_summarise = c(col.reach.type, col.reach.disagg))
+
+
+ind.1125 <- temp %>% 
+  mutate(indicator = unique(name.ind),.before = 1) 
+
+print('Indicador 1.1.2.5 finished')
+# INDICATOR 2.2.1.3 -----------------------------------------------------------
+# 2.2.1.3 # de NNA que acceden al registro civil de nacimientos y otros docuimentos de identidad
+# 4.03 + 4.04
+print('Indicador 1.1.2.5 started')
+name.act <- unlist((indicators %>% filter(indicator == indicators.list[3, "indicator"]) %>% select(number_activity)))
+name.ind <- unique(unlist((indicators %>% filter(indicator == indicators.list[3, "indicator"]) %>% select(indicator))))
+
+temp <- calculate_sum(data = df,
+                      activity = name.act,
+                      aggregation = c(adm.level[[3]]),
+                      targets_summarise = c(col.reach.type, col.reach.disagg))
+
+
+ind.2213 <- temp %>% 
+  mutate(indicator = unique(name.ind),.before = 1) 
+
+print('Indicador 1.1.2.5 finished')
+# INDICATOR 3.3.1.1 -----------------------------------------------------------
+# 3.3.1.1: # de personas de la comunidad capacitadas y sensibilizadas en temas de protección de niños, niñas y adolescentes 
+# sum(10.01, 10.02)
+# remove virtual activities for the calculation of reached people, but not for indicator results
+print('INDICATOR 3.3.1.1 started')
+name.act <- unlist((indicators %>% filter(indicator == indicators.list[4, "indicator"]) %>% select(number_activity)))
+name.ind <- unique(unlist((indicators %>% filter(indicator == indicators.list[4, "indicator"]) %>% select(indicator))))
+
+temp <- calculate_sum(df %>% filter(tolower(!!sym(col.location.type))!="virtual"),
+                              activity=name.act,
+                              aggregation = c(adm.level[[3]]),
+                              targets_summarise = c(col.reach.type, col.reach.disagg))
+
+ind.3311 <- temp %>% 
+  mutate(indicator = unique(name.ind),.before = 1)  
+
+print('INDICATOR 3.3.1.1 finished')
+# INDICATOR 3.3.1.2 -----------------------------------------------------------
+# 3.3.1.2: # de redes comunitarias creadas y/o fortalecidas para la protección de NNA
+# 10.3
+print('INDICATOR 3.3.1.2 started')
+name.act <- unlist((indicators %>% filter(indicator == indicators.list[5, "indicator"]) %>% select(number_activity)))
+name.ind <- unique(unlist((indicators %>% filter(indicator == indicators.list[5, "indicator"]) %>% select(indicator))))
+
+temp <- calculate_sum(data = df,
+                      activity = name.act,
+                      aggregation = c(adm.level[[3]]),
+                      targets_summarise =  c(col.reach.type, col.reach.disagg))
+
+
+ind.3312 <- temp %>% 
+  mutate(indicator = unique(name.ind),.before = 1)  
+print('INDICATOR 3.3.1.2 finished')
+
+# INDICATOR 3.3.2.1 -----------------------------------------------------------
+# Indicador 3.3.2.1: # de personas de instituciones del Estado y sociedad civil capacitadas y apoyadas con asistencia técnica en temas de protección de niños, niñas y adolescentes 
+# sum(1.01, 1.02)
+print('INDICATOR 3.3.2.1 started')
+name.act <- unlist((indicators %>% filter(indicator == indicators.list[6, "indicator"]) %>% select(number_activity)))
+name.ind <- unique(unlist((indicators %>% filter(indicator == indicators.list[6, "indicator"]) %>% select(indicator))))
+
+temp <- calculate_sum(data = df,
+                      activity = name.act ,
+                      aggregation = c(adm.level[[3]]),
+                      targets_summarise = c(col.reach.type, col.reach.disagg))
+
+ind.3321 <- temp %>% 
+  mutate(indicator = unique(name.ind),.before = 1)  
+
+print('INDICATOR 3.3.2.1 finished')
+# INDICATOR 3.3.2.2 -----------------------------------------------------------
+# 3.3.2.2: # de personas que acceden a los servicios de protección de la niñez de instituciones apoyadas con dotaciones
+# sum(1.03)
+print('INDICATOR 3.3.2.2 started')
+name.act <- unlist((indicators %>% filter(indicator == indicators.list[7, "indicator"]) %>% select(number_activity)))
+name.ind <- unique(unlist((indicators %>% filter(indicator == indicators.list[7, "indicator"]) %>% select(indicator))))
+
+
+temp <- calculate_sum(data = df,
+                      activity = name.act,
+                      aggregation = c(adm.level[[3]]),
+                      targets_summarise = c(col.reach.type, col.reach.disagg))
+
+ind.3322 <- temp %>% 
+  mutate(indicator = unique(name.ind),.before = 1) 
+
+print('INDICATOR 3.3.2.2 finished')
+# INDICATOR TOTAL ---------------------------------------------------------
+print('INDICATOR TOTA started')
+temp <- bind_rows(ind.1124, ind.1125, ind.2213, ind.3311, ind.3312, ind.3321, ind.3322)
+
+ind.total <- calculate_sum(data = temp,
+                           activity = 'none',
+                           aggregation = 'indicator',
+                           targets_summarise = c(col.reach.type,col.reach.disagg))
+
+# Calculate disaggregation by age and sex (ninas, ninos, mujeres, homres, mujeres mayor y hombres mayor)
+ind.total<-calculate_age_gender_disaggregation(ind.total)
+ind.1124<-calculate_age_gender_disaggregation(ind.1124)
+ind.1125<-calculate_age_gender_disaggregation(ind.1125)
+ind.2213<-calculate_age_gender_disaggregation(ind.2213)
+ind.3311<-calculate_age_gender_disaggregation(ind.3311)
+ind.3312<-calculate_age_gender_disaggregation(ind.3312)
+ind.3321<-calculate_age_gender_disaggregation(ind.3321)
+ind.3322<-calculate_age_gender_disaggregation(ind.3322)
+
+# Calculate indicators by administrative level
+temp <- bind_rows(ind.1124,ind.1125, ind.2213, ind.3311, ind.3312, ind.3321, ind.3322)
+
+ind.adm3 <- calculate_sum(data = temp ,activity = 'none',aggregation = c('indicator', adm.level[[3]]), targets_summarise =c(col.reach.type,col.reach.disagg, col.totals, col.soma))
+ind.adm2 <- calculate_sum(data = ind.adm3 ,activity = 'none',aggregation = c('indicator',adm.level[[2]]), targets_summarise =c(col.reach.type,col.reach.disagg,col.totals,col.soma))
+ind.adm1 <- calculate_sum(data = ind.adm3 ,activity = 'none',aggregation = c('indicator', adm.level[[1]]), targets_summarise =c(col.reach.type,col.reach.disagg,col.totals,col.soma))
+ind.adm0 <- calculate_sum(data = ind.adm3 ,activity = 'none',aggregation = c('indicator'), targets_summarise =c(col.reach.type,col.reach.disagg,col.totals,col.soma))
+
+print('INDICATOR TOTA finished')
+# SECTORIAL OBJECTIVES ----------------------------------------------------
+
+# objectives.list<-as.vector(unique(indicators$sectorial_objective) %>% na.omit())
+# oe.list <- lapply(1:length(objectives.list), function(i){
+#   name.ind<-unique(unlist((indicators %>% filter(sectorial_objective == objectives.list[i]) %>% select(indicator))))
+#   
+#   temp <- filter(ind.adm3, grepl(paste(name.ind, collapse = "|"),indicator))
+#   oe.adm3 <- calculate_sum(data = temp, activity = 'none', aggregation = adm.level[[3]], targets_summarise =c(col.reach.type,col.reach.disagg,col.totals,col.soma)) %>%
+#     mutate(indicator = objectives.list[[i]], .before = 1)
+#   
+#   oe.adm2 <- calculate_sum(data = oe.adm3, activity = 'none', aggregation = c('indicator', adm.level[[2]]), targets_summarise =c(col.reach.type,col.reach.disagg,col.totals,col.soma))
+#   oe.adm1 <- calculate_sum(data = oe.adm3, activity = 'none', aggregation = c('indicator', adm.level[[1]]), targets_summarise =c(col.reach.type,col.reach.disagg,col.totals,col.soma))
+#   oe.adm0 <- calculate_sum(data = oe.adm3, activity = 'none', aggregation = c('indicator'), targets_summarise =c(col.reach.type,col.reach.disagg,col.totals,col.soma))
+#   result <- list(oe.adm0, oe.adm1, oe.adm2, oe.adm3)
+# })
+# 
+# oe.adm0 <- bind_rows(oe.list[[1]][[1]], oe.list[[2]][[1]], oe.list[[3]][[1]])
+# oe.adm1 <- bind_rows(oe.list[[1]][[2]], oe.list[[2]][[2]], oe.list[[3]][[2]])
+# oe.adm2 <- bind_rows(oe.list[[1]][[3]], oe.list[[2]][[3]], oe.list[[3]][[3]])
+# oe.adm3 <- bind_rows(oe.list[[1]][[4]], oe.list[[2]][[4]], oe.list[[3]][[4]])
+
+
+# TOTAL ALCANZADOS --------------------------------------------------------
+print('TOTAL ALCANZADOS started')
+temp <- bind_rows(ind.1124,ind.1125, ind.2213, ind.3311, ind.3321)
+
+# Create dataframe with adults and children
+target.adm3 <- calculate_sum(data = temp, activity = 'none',aggregation = adm.level[[3]],targets_summarise = c(col.reach.type,col.reach.disagg, col.totals, col.soma))
+target.adm2 <- calculate_sum(data = temp, activity = 'none',aggregation = adm.level[[2]],targets_summarise = c(col.reach.type,col.reach.disagg, col.totals, col.soma))
+target.adm1 <- calculate_sum(data = temp, activity = 'none',aggregation = adm.level[[1]],targets_summarise = c(col.reach.type,col.reach.disagg, col.totals, col.soma))
+target.adm0 <- calculate_sum(data = temp %>% mutate('#adm0+name'='Venezuela', '#adm0+code'='VE1'),activity = 'none',aggregation = c('#adm0+name','#adm0+code'),targets_summarise = c(col.reach.type,col.reach.disagg, col.totals,col.soma))
+
+print('TOTAL ALCANZADOS finished')
+# CALCULATE PERCENTAGE ----------------------------------------------------
+# Calculate Percentages
+# Add columns with percentage values
+print('CALCULATE PERCENTAGE started')
+# Calculate percentage of indicator and objective
+df.adm0 <- calculate_percentage(arrange_data(bind_rows(ind.adm0), adm.level = 'adm0'), adm.level = 'adm0') %>%
+  filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly')) %>% 
+  mutate('#adm0+name'='Venezuela', '#adm0+code'='VE1', .before=1)
+df.adm1 <- calculate_percentage(arrange_data(bind_rows(ind.adm1), adm.level = adm1), adm.level = adm.level[[1]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly')) %>% 
+  select(all_of(adm.level[[1]]), everything())
+df.adm2 <- calculate_percentage(arrange_data(bind_rows(ind.adm2), adm.level = adm12), adm.level = adm.level[[2]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly')) %>% 
+  select(all_of(adm.level[[2]]), everything())
+
+
+# # Calculate percentage of indicator and objective
+# df.adm0 <- calculate_percentage(arrange_data(bind_rows(oe.adm0, ind.adm0), adm.level = 'adm0'), adm.level = 'adm0') %>%
+#   filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly')) %>% 
+#   mutate('#adm0+name'='Venezuela', '#adm0+code'='VE1', .before=1)
+# df.adm1 <- calculate_percentage(arrange_data(bind_rows(oe.adm1, ind.adm1), adm.level = adm1), adm.level = adm.level[[1]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly')) %>% 
+#   select(all_of(adm.level[[1]]), everything())
+# df.adm2 <- calculate_percentage(arrange_data(bind_rows(oe.adm2, ind.adm2), adm.level = adm12), adm.level = adm.level[[2]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly')) %>% 
+#   select(all_of(adm.level[[2]]), everything())
+# # df.adm3 <- calculate_percentage(arrange_data(bind_rows(oe.adm3, ind.adm3), adm.level = adm123), adm.level = adm.level[[3]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly'))
+
+# Calculate percentage of reached people
+t.adm0 <- calculate_percentage_target(arrange_data_target(target.adm0,adm.level = adm0), adm.level = adm0) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly'))
+t.adm1 <- calculate_percentage_target(arrange_data_target(target.adm1,adm.level = adm1), adm.level = adm.level[[1]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly'))
+t.adm2 <- calculate_percentage_target(arrange_data_target(target.adm2,adm.level = adm12), adm.level = adm.level[[2]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly'))
+# t.adm3 <- calculate_percentage_target(arrange_data_target(target.adm3,adm.level = adm123), adm.level = adm.level[[3]]) %>% filter(!desagregacion %in% c('#reached+f+adults', '#reached+m+adults', '#reached+f+elderly', '#reached+m+elderly'))
+print('CALCULATE PERCENTAGE finished')
+
+# ADD LABELS --------------------------------------------------------------
+# print('ADD LABELS started')
+# df.adm0<- df.adm0%>% 
+#   left_join(name_labels) %>%
+#   select(adm0,"indicator","descripcion","personas","total_personas","personas_pct") %>% 
+#   rename("desagregación" = "descripcion",
+#          "indicador" = "indicator")
+# 
+# df.adm1 <- df.adm1 %>% 
+#   left_join(name_labels) %>%
+#   select(adm.level[[1]],"indicator","descripcion","personas","total_personas","personas_pct") %>% 
+#   rename("desagregación" = "descripcion",
+#          "indicador" = "indicator")
+# 
+# df.adm2 <- df.adm2 %>% 
+#   left_join(name_labels) %>%
+#   select(adm.level[[2]],"indicator","descripcion","personas","total_personas","personas_pct") %>% 
+#   rename("desagregación" = "descripcion",
+#          "indicador" = "indicator")
+# 
+# t.adm0 <- t.adm0 %>% 
+#   left_join(name_labels) %>%
+#   select(adm0,"descripcion","personas","total_personas","personas_pct") %>% 
+#   rename("desagregacion" = "descripcion")
+# 
+# t.adm1 <- t.adm1 %>% 
+#   left_join(name_labels) %>%
+#   select(adm.level[[1]],"descripcion","personas","total_personas","personas_pct") %>% 
+#   rename("desagregacion" = "descripcion")
+# 
+# t.adm2 <- t.adm2 %>% 
+#   left_join(name_labels) %>%
+#   select(adm.level[[2]],"descripcion","personas","total_personas","personas_pct") %>% 
+#   rename("desagregacion" = "descripcion")
+# print('ADD LABELS finished')
+
+# EXPORT ------------------------------------------------------------------
+print(' EXPORT started')
+# Create list of dataframes
+df_list <- list(
+  'DATA' = clean_data,
+  'adm0_target' = t.adm0,
+  'adm0_ind' = df.adm0,
+  
+  'adm1_target' = t.adm1,
+  'adm1_ind' = df.adm1,
+  
+  'adm2_target' = t.adm2,
+  'adm2_ind' = df.adm2)
+
+# Get the names of dataframes and remove the first name
+sheet_names <- names(df_list)[-1]
+
+# Replace NA values with another value (e.g., "Missing") in each dataframe
+for (sheet_name in sheet_names) {
+  temp <- df_list[[sheet_name]]
+  temp[is.na(temp)] <- 0
+  df_list[[sheet_name]] <- temp
+}
+
+
+hs <- createStyle(
+  textDecoration = "BOLD", fontColour = "#FFFFFF", fontSize = 12,
+  fontName = "Arial Narrow", fgFill = "#95C651"
+)
+write.xlsx(df_list,paste0('./02_output/',sector,'//',reported_date,'_adr_nna_analisis_345w.xlsx'), colWidths=20,  headerStyle = hs)
+
+
+# Ocha
+# Write each dataframe to a separate sheet in the Excel workbook
+write_xlsx(
+  target.adm2 %>% select(all_of(c(adm.level[[2]],col.reached,col.totals))),
+  path = paste0('./02_output/',sector,'//',reported_date,'_adr_nna_345w_ocha.xlsx')
+)
+print(' EXPORT finished')
